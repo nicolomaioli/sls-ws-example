@@ -1,0 +1,27 @@
+---
+service: wspoc
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  websocketsApiName: wspoc-api
+  websocketsApiRouteSelectionExpression: $request.body.action
+
+functions:
+  connect:
+    handler: src/connect.handler
+    events:
+      - websocket:
+        route: $connect
+
+  disconnect:
+    handler: src/disconnect.handler
+    events:
+      - websocket:
+        route: $disconnect
+
+  default:
+    handler: src/default.handler
+    events:
+      - websocket:
+        route: $default
