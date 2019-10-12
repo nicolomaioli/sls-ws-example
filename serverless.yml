@@ -6,8 +6,9 @@ provider:
   runtime: nodejs10.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-west-1'}
-  websocketsApiName: wspoc-api
-  websocketsApiRouteSelectionExpression: $request.body.action
+
+  apiGateway:
+    websocketApiId: bgkbiq7ikd
 
   iamRoleStatements:
     - Effect: Allow
