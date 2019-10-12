@@ -4,8 +4,7 @@ service: wspoc
 provider:
   name: aws
   runtime: nodejs10.x
-  defaultStage: dev-${env:USER}
-  stage: ${opt:stage, self:provider.defaultStage}
+  stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-west-1'}
   websocketsApiName: wspoc-api
   websocketsApiRouteSelectionExpression: $request.body.action
