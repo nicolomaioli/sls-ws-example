@@ -4,8 +4,47 @@ service: wspoc
 provider:
   name: aws
   runtime: nodejs10.x
+  defaultStage: dev-${env:USER}
+  stage: ${opt:stage, self:provider.defaultStage}
+  region: ${opt:region, 'eu-west-1'}
   websocketsApiName: wspoc-api
   websocketsApiRouteSelectionExpression: $request.body.action
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - 'Fn::GetAtt':
+          - ConnectionTable
+          - Arn
+
+  environment:
+    CONNECTION_TABLE: ConnectionTable
+
+resources:
+  Resources:
+    ConnectionTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ConnectionTable
+
+        AttributeDefinitions:
+          - AttributeName: connectionId
+            AttributeType: S
+
+        KeySchema:
+          - AttributeName: connectionId
+            KeyType: HASH
+
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 
 functions:
   connect:
