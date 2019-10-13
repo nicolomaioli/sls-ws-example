@@ -7,8 +7,8 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-west-1'}
 
-  apiGateway:
-    websocketApiId: bgkbiq7ikd
+  websocketsApiName: wspoc-${self:provider.stage}
+  websocketsApiRouteSelectionExpression: $request.body.action
 
   iamRoleStatements:
     - Effect: Allow
@@ -25,14 +25,14 @@ provider:
           - Arn
 
   environment:
-    CONNECTION_TABLE: ConnectionTable
+    CONNECTION_TABLE: ConnectionTable-${self:provider.stage}
 
 resources:
   Resources:
     ConnectionTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ConnectionTable
+        TableName: ConnectionTable-${self:provider.stage}
 
         AttributeDefinitions:
           - AttributeName: connectionId
@@ -51,16 +51,16 @@ functions:
     handler: src/connect.handler
     events:
       - websocket:
-        route: $connect
+          route: $connect
 
   disconnect:
     handler: src/disconnect.handler
     events:
       - websocket:
-        route: $disconnect
+          route: $disconnect
 
   default:
     handler: src/default.handler
     events:
       - websocket:
-        route: $default
+          route: $default
