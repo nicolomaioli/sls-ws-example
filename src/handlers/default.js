@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk')
+const { sendReply } = require('../utils/sendReply')
 
 exports.handler = async (event, _context) => {
   // Verify that connection exists in the database
@@ -57,59 +58,10 @@ exports.handler = async (event, _context) => {
     Data: postData
   }
 
-  return apigwManagementApi
-    .postToConnection(postToConnectionParams)
-    .promise()
-    .then(data => {
-      console.log(data)
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify(data)
-      }
-    })
-    .catch(err => {
-      console.error(err.message)
-
-      if (err.statusCode === 410) {
-        console.log(`Found stale connection, deleting ${connectionId}`)
-
-        const deleteParams = {
-          TableName: CONNECTION_TABLE,
-          Key: {
-            connectionId
-          }
-        }
-
-        return dynamoDbClient
-          .delete(deleteParams)
-          .promise()
-      }
-
-      return {
-        statusCode: 500,
-        body: JSON.stringify(err)
-      }
-    })
-    .then(data => {
-      console.log('Connection deleted')
-      console.log(data)
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: 'Connection deleted'
-        })
-      }
-    })
-    .catch(err => {
-      console.error(err.message)
-
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: 'Could not delete stale connection'
-        })
-      }
-    })
+  return sendReply(
+    apigwManagementApi,
+    postToConnectionParams,
+    dynamoDbClient,
+    CONNECTION_TABLE
+  )
 }
