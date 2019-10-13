@@ -1,6 +1,11 @@
 ---
 service: wspoc
 
+package:
+  exclude:
+    - tags
+    - tags.*
+
 provider:
   name: aws
   runtime: nodejs10.x
