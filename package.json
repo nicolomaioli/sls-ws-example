@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "deploy": "sls deploy",
-    "remove": "sls remove"
+    "remove": "sls remove",
+    "start": "wscat"
   },
   "devDependencies": {
     "eslint": "^6.5.1",
