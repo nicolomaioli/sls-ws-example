@@ -53,19 +53,19 @@ resources:
 
 functions:
   connect:
-    handler: src/connect.handler
+    handler: src/handlers/connect.handler
     events:
       - websocket:
           route: $connect
 
   disconnect:
-    handler: src/disconnect.handler
+    handler: src/handlers/disconnect.handler
     events:
       - websocket:
           route: $disconnect
 
   default:
-    handler: src/default.handler
+    handler: src/handlers/default.handler
     events:
       - websocket:
           route: $default
