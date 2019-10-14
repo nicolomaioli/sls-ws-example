@@ -14,6 +14,8 @@ provider:
 
   websocketsApiName: wspoc-${self:provider.stage}
   websocketsApiRouteSelectionExpression: $request.body.action
+  logs:
+    websocket: true
 
   iamRoleStatements:
     - Effect: Allow

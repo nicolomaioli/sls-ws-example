@@ -4,9 +4,9 @@ const { sendMessage } = require('../utils/sendMessage')
 exports.handler = async (event, _context) => {
   // Check that we have a message to send before doing any work
   const eventBody = JSON.parse(event.body)
-  const postData = eventBody.message
+  const message = eventBody.message
 
-  if (!postData) {
+  if (!message) {
     // Nothing to do
     return {
       statusCode: 200,
@@ -24,23 +24,28 @@ exports.handler = async (event, _context) => {
     TableName: CONNECTION_TABLE
   }
 
+  const connectionId = event.requestContext.connectionId
+  let username = ''
+
   const connections = await dynamoDbClient
     .scan(scanParams)
     .promise()
     .then(data => {
       return data.Items.map(it => {
+        if (it.connectionId.S === connectionId) {
+          username = it.username.S
+        }
+
         return it.connectionId.S
       })
     })
     .catch(err => {
       console.error(err.message)
 
-      return []
+      return null
     })
 
-  console.log(connections)
-
-  if (!connections.length) {
+  if (!connections) {
     return {
       statusCode: 200,
       body: JSON.stringify({
@@ -52,6 +57,7 @@ exports.handler = async (event, _context) => {
   // Send a response
   const domainName = event.requestContext.domainName
   const stage = event.requestContext.stage
+  const postData = `${username}: ${message}`
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
     endpoint: `${domainName}/${stage}`
   })

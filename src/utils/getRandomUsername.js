@@ -2,7 +2,7 @@ const getRandomDigit = () => {
   return Math.floor(Math.random() * 10)
 }
 
-exports.getRandomUsername = () => {
+const getRandomUsername = () => {
   const races = [
     'Dragonborn',
     'Dwarf',
@@ -42,3 +42,5 @@ exports.getRandomUsername = () => {
 
   return username
 }
+
+module.exports = getRandomUsername
