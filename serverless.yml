@@ -70,8 +70,8 @@ functions:
       - websocket:
           route: $default
 
-  sendMessage:
-    handler: src/handlers/sendMessage.handler
+  message:
+    handler: src/handlers/message.handler
     events:
       - websocket:
-          route: sendMessage
+          route: message

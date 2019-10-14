@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk')
-const { sendReply } = require('../utils/sendReply')
+const { sendMessage } = require('../utils/sendMessage')
 
 exports.handler = async (event, _context) => {
   // Check that we have a message to send before doing any work
@@ -65,7 +65,7 @@ exports.handler = async (event, _context) => {
     }
 
     replies.push(
-      sendReply(
+      sendMessage(
         apigwManagementApi,
         postToConnectionParams,
         dynamoDbClient,
