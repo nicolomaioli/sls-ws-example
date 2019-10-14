@@ -69,3 +69,9 @@ functions:
     events:
       - websocket:
           route: $default
+
+  sendMessage:
+    handler: src/handlers/sendMessage.handler
+    events:
+      - websocket:
+          route: sendMessage

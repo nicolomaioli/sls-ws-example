@@ -7,59 +7,45 @@ exports.sendReply = async (apigwManagementApi, postToConnectionParams, dynamoDbC
     .postToConnection(postToConnectionParams)
     .promise()
     .then(data => {
-      console.log(data)
+      console.log('Successfully sent a response')
 
       // All went well
       return {
         statusCode: 200,
-        body: JSON.stringify(data)
-      }
-    })
-    .catch(err => {
-      console.error(err.message)
-
-      if (err.statusCode === 410) {
-        // Error due to stale connection: delete connection and return error
-        console.log(`Found stale connection, deleting ${connectionId}`)
-
-        const deleteParams = {
-          TableName: connectionTable,
-          Key: {
-            connectionId
-          }
-        }
-
-        return dynamoDbClient
-          .delete(deleteParams)
-          .promise()
-      }
-
-      // Error not due to stale connection, return error
-      return {
-        statusCode: 500,
-        body: JSON.stringify(err)
-      }
-    })
-    .then(data => {
-      // Stale connection successfully deleted
-      console.log('Connection deleted')
-      console.log(data)
-
-      return {
-        statusCode: 200,
         body: JSON.stringify({
-          message: 'Connection deleted'
+          message: 'OK'
         })
       }
     })
-    .catch(err => {
-      // Error while deleting stale connection
+    .catch(async err => {
+      console.log('This catch block was executed')
       console.error(err.message)
+
+      if (err.statusCode !== 410) {
+        return {
+          statusCode: 500,
+          body: JSON.stringify(err)
+        }
+      }
+
+      // Error due to stale connection: delete connection and return error
+      console.log(`Found stale connection, deleting ${connectionId}`)
+
+      const deleteParams = {
+        TableName: connectionTable,
+        Key: {
+          connectionId
+        }
+      }
+
+      await dynamoDbClient
+        .deleteItem(deleteParams)
+        .promise()
 
       return {
         statusCode: 500,
         body: JSON.stringify({
-          error: 'Could not delete stale connection'
+          error: 'Could not reply'
         })
       }
     })
