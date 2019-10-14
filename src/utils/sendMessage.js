@@ -1,4 +1,4 @@
-exports.sendReply = async (apigwManagementApi, postToConnectionParams, dynamoDbClient, connectionTable) => {
+exports.sendMessage = async (apigwManagementApi, postToConnectionParams, dynamoDbClient, connectionTable) => {
   // Post to connection, or delete connectionId if found stale
 
   const connectionId = postToConnectionParams.connectionId
