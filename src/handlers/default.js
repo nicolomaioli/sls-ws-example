@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk')
-const { sendReply } = require('../utils/sendReply')
+const { sendMessage } = require('../utils/sendMessage')
 
 exports.handler = async (event, _context) => {
   const connectionId = event.requestContext.connectionId
@@ -20,10 +20,17 @@ exports.handler = async (event, _context) => {
     Data: postData
   }
 
-  return sendReply(
+  await sendMessage(
     apigwManagementApi,
     postToConnectionParams,
     dynamoDbClient,
     CONNECTION_TABLE
   )
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'OK'
+    })
+  }
 }
