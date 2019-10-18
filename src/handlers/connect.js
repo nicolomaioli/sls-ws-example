@@ -24,6 +24,8 @@ exports.handler = async (event, _context) => {
     .putItem(putParams)
     .promise()
     .then(data => {
+      console.log(`Recorded connectionId: ${connectionId}`)
+
       return {
         statusCode: 200,
         body: JSON.stringify({
@@ -33,6 +35,8 @@ exports.handler = async (event, _context) => {
       }
     })
     .catch(err => {
+      console.log(`Failed to record connectionId: ${connectionId}`)
+
       return {
         statusCode: 500,
         body: JSON.stringify({

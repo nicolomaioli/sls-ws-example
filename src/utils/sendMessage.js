@@ -1,52 +1,39 @@
 exports.sendMessage = async (apigwManagementApi, postToConnectionParams, dynamoDbClient, connectionTable) => {
   // Post to connection, or delete connectionId if found stale
 
-  const connectionId = postToConnectionParams.connectionId
+  const connectionId = postToConnectionParams.ConnectionId
 
-  return apigwManagementApi
+  await apigwManagementApi
     .postToConnection(postToConnectionParams)
     .promise()
     .then(data => {
+      console.log('data', data)
       console.log('Successfully sent a response')
 
-      // All went well
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: 'OK'
-        })
-      }
+      return connectionId
     })
     .catch(async err => {
-      console.log('This catch block was executed')
-      console.error(err.message)
+      console.error('error', err)
 
-      if (err.statusCode !== 410) {
-        return {
-          statusCode: 500,
-          body: JSON.stringify(err)
+      if (err.statusCode === 410) {
+        // Error due to stale connection
+        console.log(`Found stale connection, deleting ${connectionId}`)
+
+        const deleteParams = {
+          TableName: connectionTable,
+          Key: {
+            connectionId: {
+              S: connectionId
+            }
+          }
         }
+
+        await dynamoDbClient
+          .deleteItem(deleteParams)
+          .promise()
       }
 
-      // Error due to stale connection: delete connection and return error
-      console.log(`Found stale connection, deleting ${connectionId}`)
-
-      const deleteParams = {
-        TableName: connectionTable,
-        Key: {
-          connectionId
-        }
-      }
-
-      await dynamoDbClient
-        .deleteItem(deleteParams)
-        .promise()
-
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: 'Could not reply'
-        })
-      }
+      // Raise error for sendMessage catch
+      throw err
     })
 }

@@ -82,8 +82,10 @@ exports.handler = async (event, _context) => {
 
   await Promise
     .all(replies)
-    .then(response => {
-      console.log(response)
+    .then(data => {
+      data.forEach(connection => {
+        console.log(`Message sent to ${connection}`)
+      })
     })
     .catch(err => {
       console.error(err)
