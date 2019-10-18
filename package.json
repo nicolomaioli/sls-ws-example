@@ -6,6 +6,7 @@
     "start": "wscat"
   },
   "devDependencies": {
+    "aws-sdk": "^2.552.0",
     "eslint": "^6.5.1",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
@@ -15,7 +16,5 @@
     "serverless": "^1.54.0",
     "wscat": "^3.0.0"
   },
-  "dependencies": {
-    "aws-sdk": "^2.547.0"
-  }
+  "dependencies": {}
 }
