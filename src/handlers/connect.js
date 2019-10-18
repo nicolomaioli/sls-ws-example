@@ -1,10 +1,8 @@
 const AWS = require('aws-sdk')
-const getRandomUsername = require('../utils/getRandomUsername')
 
 exports.handler = async (event, _context) => {
   const CONNECTION_TABLE = process.env.CONNECTION_TABLE
   const connectionId = event.requestContext.connectionId
-  const username = getRandomUsername()
 
   const dynamoDbClient = new AWS.DynamoDB()
 
@@ -13,9 +11,6 @@ exports.handler = async (event, _context) => {
     Item: {
       connectionId: {
         S: connectionId
-      },
-      username: {
-        S: username
       }
     }
   }

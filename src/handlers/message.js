@@ -24,17 +24,11 @@ exports.handler = async (event, _context) => {
     TableName: CONNECTION_TABLE
   }
 
-  const connectionId = event.requestContext.connectionId
-  let username = ''
-
   const connections = await dynamoDbClient
     .scan(scanParams)
     .promise()
     .then(data => {
       return data.Items.map(it => {
-        if (it.connectionId.S === connectionId) {
-          username = it.username.S
-        }
 
         return it.connectionId.S
       })
@@ -57,7 +51,7 @@ exports.handler = async (event, _context) => {
   // Send a response
   const domainName = event.requestContext.domainName
   const stage = event.requestContext.stage
-  const postData = `${username}: ${message}`
+  const postData = message
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
     endpoint: `${domainName}/${stage}`
   })
