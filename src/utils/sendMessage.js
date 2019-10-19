@@ -34,6 +34,7 @@ exports.sendMessage = async (apigwManagementApi, postToConnectionParams, dynamoD
       }
 
       // Raise error for sendMessage catch
+      err.connectionId = connectionId
       throw err
     })
 }

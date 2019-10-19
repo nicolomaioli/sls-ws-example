@@ -41,6 +41,15 @@ exports.handler = async (event, _context) => {
 
   if (!connections) {
     return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Could not get connections'
+      })
+    }
+  }
+
+  if (connections.length === 0) {
+    return {
       statusCode: 200,
       body: JSON.stringify({
         message: 'No connected clients'
@@ -82,7 +91,8 @@ exports.handler = async (event, _context) => {
       })
     })
     .catch(err => {
-      console.error(err)
+      console.error(`Failed to send message to ${err.connectionId}`)
+      console.error('error', err)
     })
 
   return {
