@@ -20,23 +20,23 @@ exports.handler = async (event, _context) => {
     .promise()
     .then(data => {
       console.log(`Recorded connectionId: ${connectionId}`)
+      console.log(data)
 
       return {
         statusCode: 200,
         body: JSON.stringify({
-          message: 'Connected',
-          data
+          message: 'Connected'
         })
       }
     })
     .catch(err => {
       console.log(`Failed to record connectionId: ${connectionId}`)
+      console.error(err)
 
       return {
         statusCode: 500,
         body: JSON.stringify({
-          error: 'Failed to connect',
-          err
+          error: 'Failed to connect'
         })
       }
     })
