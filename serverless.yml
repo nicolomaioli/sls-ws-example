@@ -3,6 +3,7 @@ service: sls_ws_example
 
 package:
   exclude:
+    - coverage
     - tags
     - tags.*
 
