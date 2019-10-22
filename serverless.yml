@@ -1,5 +1,5 @@
 ---
-service: wspoc
+service: sls_ws_example
 
 package:
   exclude:
@@ -12,7 +12,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-west-1'}
 
-  websocketsApiName: wspoc-${self:provider.stage}
+  websocketsApiName: sls_ws_example-${self:provider.stage}
   websocketsApiRouteSelectionExpression: $request.body.action
   logs:
     websocket: true

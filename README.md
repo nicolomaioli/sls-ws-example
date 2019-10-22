@@ -1,4 +1,4 @@
-# sls-ws-poc
+# Serverless WebSocket Example
 
 ## Resources
 
@@ -6,12 +6,18 @@
 - Serverless Framework documentation: [Websocket](https://serverless.com/framework/docs/providers/aws/events/websocket/)
 - Reference project: [AWS Simple WebSockets Chat App](https://github.com/aws-samples/simple-websockets-chat-app)
 
-## Run
+## Deploy
 
-If you already have `aws-cli` configured, `serverless` will use that configuration to deploy. Otherwise, refer to the [AWS quick start](https://serverless.com/framework/docs/providers/aws/guide/quick-start/).
+- Configure the Serverless Framework: [AWS quick start](https://serverless.com/framework/docs/providers/aws/guide/quick-start/)
+- Install dependencies and deploy:
 
 ```bash
-npm ci
+npm install
 npm run deploy
-npm start -- -c wss://your-api-endpoint-here
+```
+
+## Test
+
+```bash
+npm test
 ```
