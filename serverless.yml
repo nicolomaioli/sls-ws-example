@@ -15,6 +15,7 @@ provider:
 
   websocketsApiName: sls_ws_example-${self:provider.stage}
   websocketsApiRouteSelectionExpression: $request.body.action
+
   logs:
     websocket: true
 

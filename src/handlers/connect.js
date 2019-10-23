@@ -30,7 +30,7 @@ exports.handler = async (event, _context) => {
       }
     })
     .catch(err => {
-      console.log(`Failed to record connectionId: ${connectionId}`)
+      console.error(`Failed to record connectionId: ${connectionId}`)
       console.error(err)
 
       return {

@@ -20,24 +20,23 @@ exports.handler = async (event, _context) => {
     .promise()
     .then(data => {
       console.log(`Deleted connectionId: ${connectionId}`)
+      console.log(data)
 
       return {
         statusCode: 200,
         body: JSON.stringify({
-          message: `Disconnected connectionId: ${connectionId}`,
-          data
+          message: `Disconnected connectionId: ${connectionId}`
         })
       }
     })
     .catch(err => {
       console.error(`Failed to disconnect connectionId: ${connectionId}`)
-      console.error('error', err)
+      console.error(err)
 
       return {
         statusCode: 500,
         body: JSON.stringify({
-          error: 'Failed to disconnect',
-          err
+          error: 'Failed to disconnect'
         })
       }
     })
