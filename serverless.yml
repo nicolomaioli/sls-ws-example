@@ -1,5 +1,5 @@
 ---
-service: sls_ws_example
+service: sls-ws-example
 
 package:
   exclude:
