@@ -5,7 +5,7 @@ const AWS = require('aws-sdk')
 const AWSMock = require('aws-sdk-mock')
 const sinon = require('sinon')
 
-describe('$connect', () => {
+describe('$disconnect', () => {
   beforeAll(() => {
     process.env.CONNECTION_TABLE = 'test'
   })
