@@ -20,17 +20,26 @@ exports.handler = async (event, _context) => {
     Data: postData
   }
 
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'OK'
+    })
+  }
+
   await sendMessage(
     apigwManagementApi,
     postToConnectionParams,
     dynamoDbClient,
     CONNECTION_TABLE
   )
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'OK'
+    .catch(err => {
+      console.error(err)
+      response.statusCode = 500
+      response.body = JSON.stringify({
+        error: `Unable to send message to ${err.connectionId}`
+      })
     })
-  }
+
+  return response
 }
