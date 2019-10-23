@@ -1,7 +1,7 @@
 'use strict'
 
 const AWS = require('aws-sdk')
-const { sendMessage } = require('../utils/sendMessage')
+const sendMessage = require('../utils/sendMessage')
 
 exports.handler = async (event, _context) => {
   // Check that we have a message to send before doing any work
