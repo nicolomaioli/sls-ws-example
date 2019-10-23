@@ -1,3 +1,5 @@
+'use strict'
+
 exports.sendMessage = async (apigwManagementApi, postToConnectionParams, dynamoDbClient, connectionTable) => {
   // Post to connection, or delete connectionId if found stale
 

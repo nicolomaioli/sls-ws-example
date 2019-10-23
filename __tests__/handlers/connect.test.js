@@ -1,4 +1,6 @@
-const handler = require('../../src/handlers/connect').handler
+'use strict'
+
+const { handler } = require('../../src/handlers/connect')
 const AWS = require('aws-sdk')
 const AWSMock = require('aws-sdk-mock')
 const sinon = require('sinon')

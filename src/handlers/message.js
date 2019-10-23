@@ -1,3 +1,5 @@
+'use strict'
+
 const AWS = require('aws-sdk')
 const { sendMessage } = require('../utils/sendMessage')
 
@@ -29,7 +31,6 @@ exports.handler = async (event, _context) => {
     .promise()
     .then(data => {
       return data.Items.map(it => {
-
         return it.connectionId.S
       })
     })
