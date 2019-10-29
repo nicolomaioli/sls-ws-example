@@ -59,8 +59,7 @@ exports.handler = async (event, _context) => {
   }
 
   // Send a response
-  const domainName = event.requestContext.domainName
-  const stage = event.requestContext.stage
+  const { domainName, stage } = event.requestContext
   const postData = message
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
     endpoint: `${domainName}/${stage}`
