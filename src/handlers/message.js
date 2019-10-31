@@ -33,17 +33,8 @@ exports.handler = async (event, _context) => {
     })
     .catch(err => {
       console.error(err.message)
-      return null
+      throw err
     })
-
-  if (!connections) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: 'Could not get connections'
-      })
-    }
-  }
 
   if (connections.length === 0) {
     return {
