@@ -61,21 +61,25 @@ functions:
     events:
       - websocket:
           route: $connect
+          cors: true
 
   disconnect:
     handler: src/handlers/disconnect.handler
     events:
       - websocket:
           route: $disconnect
+          cors: true
 
   default:
     handler: src/handlers/default.handler
     events:
       - websocket:
           route: $default
+          cors: true
 
   message:
     handler: src/handlers/message.handler
     events:
       - websocket:
           route: message
+          cors: true
