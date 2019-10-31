@@ -17,29 +17,23 @@ exports.handler = async (event, _context) => {
     }
   }
 
-  return dynamoDbClient
+  await dynamoDbClient
     .deleteItem(deleteParams)
     .promise()
     .then(data => {
       console.log(`Deleted connectionId: ${connectionId}`)
       console.log(data)
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: `Disconnected connectionId: ${connectionId}`
-        })
-      }
     })
     .catch(err => {
       console.error(`Failed to disconnect connectionId: ${connectionId}`)
       console.error(err)
-
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: 'Failed to disconnect'
-        })
-      }
+      throw err
     })
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: `Disconnected connectionId: ${connectionId}`
+    })
+  }
 }

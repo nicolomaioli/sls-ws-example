@@ -32,6 +32,8 @@ exports.handler = async (event, _context) => {
     })
 
   if (staleConnection !== null) {
+    console.log(`Deleting stale connection: ${staleConnection}`)
+
     const deleteParams = {
       TableName: CONNECTION_TABLE,
       Key: {

@@ -17,29 +17,23 @@ exports.handler = async (event, _context) => {
     }
   }
 
-  return dynamoDbClient
+  await dynamoDbClient
     .putItem(putParams)
     .promise()
     .then(data => {
       console.log(`Recorded connectionId: ${connectionId}`)
       console.log(data)
-
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: 'Connected'
-        })
-      }
     })
     .catch(err => {
       console.error(`Failed to record connectionId: ${connectionId}`)
       console.error(err)
-
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error: 'Failed to connect'
-        })
-      }
+      throw err
     })
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: 'Connected'
+    })
+  }
 }
