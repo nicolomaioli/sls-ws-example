@@ -22,26 +22,36 @@ exports.handler = async (event, _context) => {
     Data: postData
   }
 
-  const response = {
+  const staleConnection = await sendMessage(apigwManagementApi, postToConnectionParams)
+    .then(connectionId => {
+      return connectionId
+    })
+    .catch(err => {
+      console.error(err)
+      throw err
+    })
+
+  if (staleConnection !== null) {
+    const deleteParams = {
+      TableName: CONNECTION_TABLE,
+      Key: {
+        connectionId: {
+          S: connectionId
+        }
+      }
+    }
+
+    await dynamoDbClient
+      .deleteItem(deleteParams)
+      .promise()
+      .then(data => console.log(data))
+      .catch(err => console.error(err))
+  }
+
+  return {
     statusCode: 200,
     body: JSON.stringify({
       message: 'OK'
     })
   }
-
-  await sendMessage(
-    apigwManagementApi,
-    postToConnectionParams,
-    dynamoDbClient,
-    CONNECTION_TABLE
-  )
-    .catch(err => {
-      console.error(err)
-      response.statusCode = 500
-      response.body = JSON.stringify({
-        error: `Unable to send message to ${err.connectionId}`
-      })
-    })
-
-  return response
 }
