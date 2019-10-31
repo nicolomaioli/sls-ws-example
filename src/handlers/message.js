@@ -10,16 +10,13 @@ exports.handler = async (event, _context) => {
 
   if (!message) {
     // Nothing to do
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'No message'
-      })
-    }
+    console.error('Message should not be blank')
+    const error = new Error()
+    throw error
   }
 
   // Retrieve all active connections
-  const CONNECTION_TABLE = process.env.CONNECTION_TABLE
+  const { CONNECTION_TABLE } = process.env
   const dynamoDbClient = new AWS.DynamoDB()
 
   const scanParams = {
@@ -36,7 +33,6 @@ exports.handler = async (event, _context) => {
     })
     .catch(err => {
       console.error(err.message)
-
       return null
     })
 
@@ -76,24 +72,52 @@ exports.handler = async (event, _context) => {
     replies.push(
       sendMessage(
         apigwManagementApi,
-        postToConnectionParams,
-        dynamoDbClient,
-        CONNECTION_TABLE
+        postToConnectionParams
       )
     )
   })
 
+  // Initialise list of stale connections
+  let staleConnections = []
+
   await Promise
     .all(replies)
     .then(data => {
-      data.forEach(connection => {
-        console.log(`Message sent to ${connection}`)
+      staleConnections = data.filter(it => {
+        return it != null
       })
     })
     .catch(err => {
-      console.error(`Failed to send message to ${err.connectionId}`)
       console.error('error', err)
+      throw err
     })
+
+  if (staleConnections.length) {
+    // Delete all stale connections
+    const deleteItemPromises = []
+
+    staleConnections.forEach(connectionId => {
+      const deleteParams = {
+        TableName: CONNECTION_TABLE,
+        Key: {
+          connectionId: {
+            S: connectionId
+          }
+        }
+      }
+
+      const promise = dynamoDbClient
+        .deleteItem(deleteParams)
+        .promise()
+
+      deleteItemPromises.push(promise)
+    })
+
+    await Promise
+      .all(deleteItemPromises)
+      .then(data => console.log(data))
+      .catch(err => console.error(err))
+  }
 
   return {
     statusCode: 200,

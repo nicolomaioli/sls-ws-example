@@ -1,42 +1,28 @@
 'use strict'
 
-module.exports = async (apigwManagementApi, postToConnectionParams, dynamoDbClient, connectionTable) => {
-  // Post to connection, or delete connectionId if found stale
+module.exports = async (apigwManagementApi, postToConnectionParams) => {
+  // Post to connection, returns connectionId if found stale
 
   const connectionId = postToConnectionParams.ConnectionId
 
-  await apigwManagementApi
+  const staleConnection = await apigwManagementApi
     .postToConnection(postToConnectionParams)
     .promise()
     .then(data => {
-      console.log('data', data)
-      console.log('Successfully sent a response')
+      console.log(`Message sent to ${connectionId}`)
 
-      return connectionId
+      return null
     })
     .catch(async err => {
       console.error('error', err)
 
       if (err.statusCode === 410) {
-        // Error due to stale connection
-        console.log(`Found stale connection, deleting ${connectionId}`)
-
-        const deleteParams = {
-          TableName: connectionTable,
-          Key: {
-            connectionId: {
-              S: connectionId
-            }
-          }
-        }
-
-        await dynamoDbClient
-          .deleteItem(deleteParams)
-          .promise()
+        console.log(`Found stale connection: ${connectionId}`)
+        return connectionId
       }
 
-      // Raise error for sendMessage catch
-      err.connectionId = connectionId
       throw err
     })
+
+  return staleConnection
 }
