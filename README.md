@@ -1,5 +1,7 @@
 # Serverless WebSocket Example
 
+[Live demo](https://nicolomaioli.github.io/sls-ws-example-client/)
+
 ## Resources
 
 - Architecture: [Building Real Time Applications using WebSocket APIs Supported by Amazon API Gateway](https://www.youtube.com/watch?v=3SCdzzD0PdQ)
