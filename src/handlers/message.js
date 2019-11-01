@@ -8,6 +8,7 @@ exports.handler = async (event, _context) => {
   // Check that we have a message to send before doing any work
   const eventBody = JSON.parse(event.body)
   const message = eventBody.message
+  const { connectionId, domainName, stage } = event.requestContext
 
   if (!message) {
     // Nothing to do
@@ -39,9 +40,39 @@ exports.handler = async (event, _context) => {
     }
   }
 
+  // Retrieve username
+  const queryParams = {
+    ExpressionAttributeValues: {
+      ':connectionId': {
+        S: connectionId
+      }
+    },
+    KeyConditionExpression: 'connectionId = :connectionId',
+    ProjectionExpression: 'username',
+    TableName: CONNECTION_TABLE
+  }
+
+  const username = await db
+    .query(queryParams)
+    .promise()
+    .then(data => {
+      console.log(data)
+      return data.Items[0].username.S
+    })
+    .catch(err => {
+      console.error(err)
+      throw err
+    })
+
   // Send a message to all connected clients
-  const { domainName, stage } = event.requestContext
-  const postData = message
+  const timestamp = new Date()
+  const postData = JSON.stringify({
+    username,
+    action: 'MESSAGE',
+    timestamp: timestamp.toISOString(),
+    message
+  })
+
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
     endpoint: `${domainName}/${stage}`
   })
