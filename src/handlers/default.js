@@ -6,7 +6,7 @@ const sendMessage = require('../utils/sendMessage')
 exports.handler = async (event, _context) => {
   const connectionId = event.requestContext.connectionId
   const CONNECTION_TABLE = process.env.CONNECTION_TABLE
-  const dynamoDbClient = new AWS.DynamoDB()
+  const db = new AWS.DynamoDB()
 
   // Send a response
   const domainName = event.requestContext.domainName
@@ -43,7 +43,7 @@ exports.handler = async (event, _context) => {
       }
     }
 
-    await dynamoDbClient
+    await db
       .deleteItem(deleteParams)
       .promise()
       .then(data => console.log(data))

@@ -11,7 +11,7 @@ describe('$default', () => {
   })
 
   test('It returns 200 when no errors occour', async done => {
-    sendMessage.mockImplementationOnce((_apigwManagementApi, _postToConnectionParams, _dynamoDbClient, _connectionTable) => {
+    sendMessage.mockImplementationOnce((_apigwManagementApi, _postToConnectionParams, _db, _connectionTable) => {
       // eslint-disable-next-line promise/param-names
       const promise = new Promise((resolve, _) => {
         resolve('test')
@@ -34,7 +34,7 @@ describe('$default', () => {
   })
 
   test('It returns 500 when errors occour', async done => {
-    sendMessage.mockImplementationOnce((_apigwManagementApi, _postToConnectionParams, _dynamoDbClient, _connectionTable) => {
+    sendMessage.mockImplementationOnce((_apigwManagementApi, _postToConnectionParams, _db, _connectionTable) => {
       // eslint-disable-next-line promise/param-names
       const promise = new Promise((_, reject) => {
         const error = new Error('test')

@@ -1,7 +1,8 @@
 'use strict'
 
 const AWS = require('aws-sdk')
-const sendMessage = require('../utils/sendMessage')
+const { sendMany } = require('../utils/sendMessage')
+const getAllConnections = require('../utils/getAllConnections')
 
 exports.handler = async (event, _context) => {
   // Check that we have a message to send before doing any work
@@ -17,22 +18,15 @@ exports.handler = async (event, _context) => {
 
   // Retrieve all active connections
   const { CONNECTION_TABLE } = process.env
-  const dynamoDbClient = new AWS.DynamoDB()
+  const db = new AWS.DynamoDB()
 
-  const scanParams = {
-    TableName: CONNECTION_TABLE
-  }
-
-  const connections = await dynamoDbClient
-    .scan(scanParams)
-    .promise()
+  const connections = await getAllConnections(db, CONNECTION_TABLE)
     .then(data => {
-      return data.Items.map(it => {
-        return it.connectionId.S
-      })
+      console.log('connecions', data)
+      return data
     })
     .catch(err => {
-      console.error(err.message)
+      console.error(err)
       throw err
     })
 
@@ -45,70 +39,18 @@ exports.handler = async (event, _context) => {
     }
   }
 
-  // Send a response
+  // Send a message to all connected clients
   const { domainName, stage } = event.requestContext
   const postData = message
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
     endpoint: `${domainName}/${stage}`
   })
 
-  const replies = []
-
-  connections.forEach(connectionId => {
-    const postToConnectionParams = {
-      ConnectionId: connectionId,
-      Data: postData
-    }
-
-    replies.push(
-      sendMessage(
-        apigwManagementApi,
-        postToConnectionParams
-      )
-    )
-  })
-
-  // Initialise list of stale connections
-  let staleConnections = []
-
-  await Promise
-    .all(replies)
-    .then(data => {
-      staleConnections = data.filter(it => {
-        return it != null
-      })
-    })
+  await sendMany(apigwManagementApi, postData, connections, db, CONNECTION_TABLE)
     .catch(err => {
-      console.error('error', err)
+      console.error(err)
       throw err
     })
-
-  if (staleConnections.length) {
-    // Delete all stale connections
-    const deleteItemPromises = []
-
-    staleConnections.forEach(connectionId => {
-      const deleteParams = {
-        TableName: CONNECTION_TABLE,
-        Key: {
-          connectionId: {
-            S: connectionId
-          }
-        }
-      }
-
-      const promise = dynamoDbClient
-        .deleteItem(deleteParams)
-        .promise()
-
-      deleteItemPromises.push(promise)
-    })
-
-    await Promise
-      .all(deleteItemPromises)
-      .then(data => console.log(data))
-      .catch(err => console.error(err))
-  }
 
   return {
     statusCode: 200,
