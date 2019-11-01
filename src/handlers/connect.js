@@ -6,8 +6,8 @@ const getAllConnections = require('../utils/getAllConnections')
 const { sendMany } = require('../utils/sendMessage')
 
 exports.handler = async (event, _context) => {
-  const CONNECTION_TABLE = process.env.CONNECTION_TABLE
-  const connectionId = event.requestContext.connectionId
+  const { CONNECTION_TABLE } = process.env
+  const { connectionId, domainName, stage } = event.requestContext
   const username = getRandomUsername()
 
   const db = new AWS.DynamoDB()
@@ -50,9 +50,8 @@ exports.handler = async (event, _context) => {
     })
 
   // Inform connected clients of new user
-  const { domainName, stage } = event.requestContext
   const timestamp = new Date()
-  const postData = JSON.stringify({
+  const connectedPostData = JSON.stringify({
     username,
     action: 'CONNECTED',
     timestamp: timestamp.toISOString(),
@@ -64,7 +63,7 @@ exports.handler = async (event, _context) => {
   })
 
   if (connections.length) {
-    await sendMany(apigwManagementApi, postData, connections, db, CONNECTION_TABLE)
+    await sendMany(apigwManagementApi, connectedPostData, connections, db, CONNECTION_TABLE)
       .catch(err => console.error(err))
   }
 
