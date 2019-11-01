@@ -51,7 +51,7 @@ exports.handler = async (event, _context) => {
     username: deleted,
     action: 'DISCONNECTED',
     timestamp: timestamp.toISOString(),
-    message: ''
+    message: null
   })
 
   const apigwManagementApi = new AWS.ApiGatewayManagementApi({
