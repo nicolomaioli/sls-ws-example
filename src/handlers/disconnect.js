@@ -5,7 +5,7 @@ const getAllConnections = require('../utils/getAllConnections')
 const { sendMany } = require('../utils/sendMessage')
 
 exports.handler = async (event, _context) => {
-  const { connectionId } = event.requestContext
+  const { connectionId, domainName, stage } = event.requestContext
 
   const { CONNECTION_TABLE } = process.env
   const db = new AWS.DynamoDB()
@@ -45,7 +45,6 @@ exports.handler = async (event, _context) => {
       return []
     })
 
-  const { domainName, stage } = event.requestContext
   const timestamp = new Date()
   const postData = JSON.stringify({
     username: deleted,
