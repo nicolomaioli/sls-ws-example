@@ -83,3 +83,10 @@ functions:
       - websocket:
           route: message
           cors: true
+
+  getUserInfo:
+    handler: src/handlers/getUserInfo.handler
+    events:
+      - websocket:
+          route: getUserInfo
+          cors: true
