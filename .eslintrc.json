@@ -20,5 +20,13 @@
             "error",
             "stroustrup"
         ]
-    }
+    },
+    "overrides": [
+        {
+            "files": ["*.test.js"],
+            "rules": {
+                "promise/param-names": "off"
+            }
+        }
+    ]
 }

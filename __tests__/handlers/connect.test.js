@@ -33,14 +33,12 @@ describe('$connect', () => {
     })
 
     getAllConnections.mockImplementation((_d, _t) => {
-      // eslint-disable-next-line promise/param-names
       return new Promise((resolve, _) => {
         resolve(['connectionId'])
       })
     })
 
     sendMessage.sendMany.mockImplementation((_a, _c, _con, _db, _t) => {
-      // eslint-disable-next-line promise/param-names
       return new Promise((resolve, _) => {
         console.log('resolved')
         resolve('success')
@@ -104,7 +102,6 @@ describe('$connect', () => {
   test('It continues execution if getAllConnections errors out', async done => {
     getAllConnections.mockReset()
     getAllConnections.mockImplementationOnce((_d, _t) => {
-      // eslint-disable-next-line promise/param-names
       return new Promise((_, reject) => {
         const error = new Error('test error')
         reject(error)
@@ -123,7 +120,6 @@ describe('$connect', () => {
   test('It continues execution if sendMany errors out', async done => {
     sendMessage.sendMany.mockReset()
     sendMessage.sendMany.mockImplementationOnce((_a, _c, _con, _db, _t) => {
-      // eslint-disable-next-line promise/param-names
       return new Promise((_, reject) => {
         const error = new Error('test error')
         reject(error)
