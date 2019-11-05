@@ -3,10 +3,46 @@
 const { handler } = require('../../src/handlers/connect')
 const AWS = require('aws-sdk')
 const AWSMock = require('aws-sdk-mock')
-const sinon = require('sinon')
+
+// Jest mocks
+jest.mock('../../src/utils/getRandomUsername')
+const getRandomUsername = require('../../src/utils/getRandomUsername')
+
+jest.mock('../../src/utils/getAllConnections')
+const getAllConnections = require('../../src/utils/getAllConnections')
+
+jest.mock('../../src/utils/sendMessage')
+const sendMessage = require('../../src/utils/sendMessage')
 
 describe('$connect', () => {
+  const event = {
+    requestContext: {
+      connectionId: 'test',
+      domainName: 'test',
+      stage: 'test'
+    }
+  }
+
   beforeAll(() => {
+    getRandomUsername.mockImplementation(() => {
+      return 'test'
+    })
+
+    getAllConnections.mockImplementation((_d, _t) => {
+      // eslint-disable-next-line promise/param-names
+      return new Promise((resolve, _) => {
+        resolve(['connectionId'])
+      })
+    })
+
+    sendMessage.sendMany.mockImplementation((_a, _c, _con, _db, _t) => {
+      // eslint-disable-next-line promise/param-names
+      return new Promise((resolve, _) => {
+        console.log('resolved')
+        resolve('success')
+      })
+    })
+
     process.env.CONNECTION_TABLE = 'test'
   })
 
@@ -19,29 +55,31 @@ describe('$connect', () => {
     expect.hasAssertions()
   })
 
+  afterAll(() => {
+    getRandomUsername.mockReset()
+    getAllConnections.mockReset()
+    sendMessage.sendMany.mockReset()
+  })
+
   test('It calls AWS.DynamoDB with the correct parameters', async done => {
-    const putItemSpy = sinon.spy()
-    AWSMock.mock('DynamoDB', 'putItem', putItemSpy)
-
-    const event = {
-      requestContext: {
-        connectionId: 'test'
-      }
-    }
-
     const expectedParams = {
       TableName: 'test',
       Item: {
         connectionId: {
           S: 'test'
+        },
+        username: {
+          S: 'test'
         }
       }
     }
 
+    AWSMock.mock('DynamoDB', 'putItem', (params, _) => {
+      expect(params).toEqual(expectedParams)
+      done()
+    })
+
     handler(event)
-    expect(putItemSpy.calledOnce).toBeTruthy()
-    expect(putItemSpy.calledWith(expectedParams)).toBeTruthy()
-    done()
   })
 
   test('It returns 200 if the connection is saved', async done => {
@@ -49,31 +87,19 @@ describe('$connect', () => {
       callback(null, 'success')
     })
 
-    const event = {
-      requestContext: {
-        connectionId: 'test'
-      }
-    }
-
     const response = await handler(event)
     expect(response.statusCode).toBe(200)
     done()
   })
 
-  test('It returns 500 if the connection is not saved', async done => {
+  test('It throws an error if the connection is not saved', async done => {
+    const error = new Error('test error')
+
     AWSMock.mock('DynamoDB', 'putItem', (_params, callback) => {
-      const error = new Error('test error')
       callback(error)
     })
 
-    const event = {
-      requestContext: {
-        connectionId: 'test'
-      }
-    }
-
-    const response = await handler(event)
-    expect(response.statusCode).toBe(500)
+    await expect(handler(event)).rejects.toEqual(error)
     done()
   })
 })
