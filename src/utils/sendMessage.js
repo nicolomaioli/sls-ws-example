@@ -8,7 +8,7 @@ const sendOne = async (apigwManagementApi, postToConnectionParams) => {
   const staleConnection = await apigwManagementApi
     .postToConnection(postToConnectionParams)
     .promise()
-    .then(data => {
+    .then(_data => {
       console.log(`Message sent to ${connectionId}`)
 
       return null
