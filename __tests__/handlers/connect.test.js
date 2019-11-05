@@ -52,13 +52,11 @@ describe('$connect', () => {
 
   afterEach(() => {
     AWSMock.restore('DynamoDB')
-    expect.hasAssertions()
-  })
-
-  afterAll(() => {
     getRandomUsername.mockReset()
     getAllConnections.mockReset()
     sendMessage.sendMany.mockReset()
+
+    expect.hasAssertions()
   })
 
   test('It calls AWS.DynamoDB with the correct parameters', async done => {
