@@ -1,57 +1,88 @@
 'use strict'
 
-jest.mock('../../src/utils/sendMessage')
-const sendMessage = require('../../src/utils/sendMessage')
+const AWS = require('aws-sdk')
+const AWSMock = require('aws-sdk-mock')
 const { handler } = require('../../src/handlers/default')
 
+// Jest mocks
+jest.mock('../../src/utils/sendMessage')
+const sendMessage = require('../../src/utils/sendMessage')
+
 describe('$default', () => {
+  const event = {
+    requestContext: {
+      connectionId: 'test',
+      domainName: 'test',
+      stage: 'test'
+    }
+  }
+
+  beforeAll(() => {
+    process.env.CONNECTION_TABLE = 'test'
+  })
+
   afterEach(() => {
+    AWSMock.restore('DynamoDB')
     jest.resetAllMocks()
+
     expect.hasAssertions()
   })
 
   test('It returns 200 when no errors occour', async done => {
-    sendMessage.mockImplementationOnce((_apigwManagementApi, _postToConnectionParams, _db, _connectionTable) => {
-      const promise = new Promise((resolve, _) => {
-        resolve('test')
+    sendMessage.sendOne.mockImplementation((_a, _p) => {
+      return new Promise((resolve, _) => {
+        resolve(null)
       })
-
-      return promise
     })
-
-    const event = {
-      requestContext: {
-        connectionId: 'test',
-        domainName: 'test',
-        stage: 'test'
-      }
-    }
 
     const response = await handler(event)
     expect(response.statusCode).toBe(200)
     done()
   })
 
-  test('It returns 500 when errors occour', async done => {
-    sendMessage.mockImplementationOnce((_apigwManagementApi, _postToConnectionParams, _db, _connectionTable) => {
-      const promise = new Promise((_, reject) => {
-        const error = new Error('test')
-        reject(error)
+  test('It returns 200 and deletes a connection if found stale', async done => {
+    sendMessage.sendOne.mockImplementation((_a, _p) => {
+      return new Promise((resolve, _) => {
+        resolve('connection')
       })
-
-      return promise
     })
 
-    const event = {
-      requestContext: {
-        connectionId: 'test',
-        domainName: 'test',
-        stage: 'test'
-      }
-    }
+    AWSMock.mock('DynamoDB', 'deleteItem', (_params, callback) => {
+      callback(null, 'success')
+    })
 
     const response = await handler(event)
-    expect(response.statusCode).toBe(500)
+    expect(response.statusCode).toBe(200)
+    done()
+  })
+
+  test('It throws an error if sendOne is unsuccessful', async done => {
+    const error = new Error('test error')
+
+    sendMessage.sendOne.mockImplementation((_a, _p) => {
+      return new Promise((_, reject) => {
+        reject(error)
+      })
+    })
+
+    await expect(handler(event)).rejects.toEqual(error)
+    done()
+  })
+
+  test('It continues execution if deleteItem errors out', async done => {
+    sendMessage.sendOne.mockImplementation((_a, _p) => {
+      return new Promise((resolve, _) => {
+        resolve('connection')
+      })
+    })
+
+    AWSMock.mock('DynamoDB', 'deleteItem', (_params, callback) => {
+      const error = new Error('test error')
+      callback(error)
+    })
+
+    const response = await handler(event)
+    expect(response.statusCode).toBe(200)
     done()
   })
 })

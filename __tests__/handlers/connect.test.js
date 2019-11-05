@@ -40,7 +40,6 @@ describe('$connect', () => {
 
     sendMessage.sendMany.mockImplementation((_a, _c, _con, _db, _t) => {
       return new Promise((resolve, _) => {
-        console.log('resolved')
         resolve('success')
       })
     })
@@ -50,9 +49,7 @@ describe('$connect', () => {
 
   afterEach(() => {
     AWSMock.restore('DynamoDB')
-    getRandomUsername.mockReset()
-    getAllConnections.mockReset()
-    sendMessage.sendMany.mockReset()
+    jest.resetAllMocks()
 
     expect.hasAssertions()
   })
