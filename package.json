@@ -16,7 +16,6 @@
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^24.9.0",
     "serverless": "^1.54.0",
-    "sinon": "^7.5.0",
     "wscat": "^3.0.0"
   },
   "dependencies": {}
