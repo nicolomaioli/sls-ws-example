@@ -24,6 +24,10 @@ describe('$connect', () => {
   }
 
   beforeAll(() => {
+    process.env.CONNECTION_TABLE = 'test'
+  })
+
+  beforeEach(() => {
     getRandomUsername.mockImplementation(() => {
       return 'test'
     })
@@ -43,10 +47,6 @@ describe('$connect', () => {
       })
     })
 
-    process.env.CONNECTION_TABLE = 'test'
-  })
-
-  beforeEach(() => {
     AWSMock.setSDKInstance(AWS)
   })
 
@@ -100,6 +100,44 @@ describe('$connect', () => {
     })
 
     await expect(handler(event)).rejects.toEqual(error)
+    done()
+  })
+
+  test('It continues execution if getAllConnections errors out', async done => {
+    getAllConnections.mockReset()
+    getAllConnections.mockImplementationOnce((_d, _t) => {
+      // eslint-disable-next-line promise/param-names
+      return new Promise((_, reject) => {
+        const error = new Error('test error')
+        reject(error)
+      })
+    })
+
+    AWSMock.mock('DynamoDB', 'putItem', (_params, callback) => {
+      callback(null, 'success')
+    })
+
+    const response = await handler(event)
+    expect(response.statusCode).toBe(200)
+    done()
+  })
+
+  test('It continues execution if sendMany errors out', async done => {
+    sendMessage.sendMany.mockReset()
+    sendMessage.sendMany.mockImplementationOnce((_a, _c, _con, _db, _t) => {
+      // eslint-disable-next-line promise/param-names
+      return new Promise((_, reject) => {
+        const error = new Error('test error')
+        reject(error)
+      })
+    })
+
+    AWSMock.mock('DynamoDB', 'putItem', (_params, callback) => {
+      callback(null, 'success')
+    })
+
+    const response = await handler(event)
+    expect(response.statusCode).toBe(200)
     done()
   })
 })
