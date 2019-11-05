@@ -41,7 +41,6 @@ describe('$disconnect', () => {
 
     sendMessage.sendMany.mockImplementation((_a, _c, _con, _db, _t) => {
       return new Promise((resolve, _) => {
-        console.log('resolved')
         resolve('success')
       })
     })
@@ -51,8 +50,7 @@ describe('$disconnect', () => {
 
   afterEach(() => {
     AWSMock.restore('DynamoDB')
-    getAllConnections.mockReset()
-    sendMessage.sendMany.mockReset()
+    jest.resetAllMocks()
 
     expect.hasAssertions()
   })
