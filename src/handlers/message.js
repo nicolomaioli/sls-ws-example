@@ -12,9 +12,13 @@ exports.handler = async (event, _context) => {
 
   if (!message) {
     // Nothing to do
-    console.error('Message should not be blank')
-    const error = new Error()
-    throw error
+    console.log('Blank message, nothing to do')
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'OK'
+      })
+    }
   }
 
   // Retrieve all active connections
