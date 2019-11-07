@@ -27,7 +27,7 @@ exports.handler = async (event, _context) => {
 
   const connections = await getAllConnections(db, CONNECTION_TABLE)
     .then(data => {
-      console.log('connecions', data)
+      console.log('connections', data)
       return data
     })
     .catch(err => {
