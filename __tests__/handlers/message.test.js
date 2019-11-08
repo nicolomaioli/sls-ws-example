@@ -2,7 +2,6 @@
 
 const { handler } = require('../../src/handlers/message')
 const AWS = require('aws-sdk')
-const AWSMock = require('aws-sdk-mock')
 
 // Jest mocks
 jest.mock('../../src/utils/getAllConnections')
@@ -28,12 +27,7 @@ describe('message', () => {
     process.env.CONNECTION_TABLE = 'test'
   })
 
-  beforeEach(() => {
-    AWSMock.setSDKInstance(AWS)
-  })
-
   afterEach(() => {
-    AWSMock.restore('DynamoDB')
     jest.resetAllMocks()
 
     expect.hasAssertions()
