@@ -2,6 +2,7 @@
 
 const AWS = require('aws-sdk')
 const { sendOne } = require('../utils/sendMessage')
+const getUsername = require('../utils/getUsername')
 
 exports.handler = async event => {
   const { connectionId, domainName, stage } = event.requestContext
@@ -9,24 +10,7 @@ exports.handler = async event => {
   const db = new AWS.DynamoDB()
 
   // Retrieve username
-  const queryParams = {
-    ExpressionAttributeValues: {
-      ':connectionId': {
-        S: connectionId
-      }
-    },
-    KeyConditionExpression: 'connectionId = :connectionId',
-    ProjectionExpression: 'username',
-    TableName: CONNECTION_TABLE
-  }
-
-  const username = await db
-    .query(queryParams)
-    .promise()
-    .then(data => {
-      console.log(data)
-      return data.Items[0].username.S
-    })
+  const username = await getUsername(db, CONNECTION_TABLE, connectionId)
     .catch(err => {
       console.error(err)
       throw err
@@ -52,6 +36,7 @@ exports.handler = async event => {
   await sendOne(apigwManagementApi, postToConnectionParams)
     .catch(err => {
       console.error(err)
+      throw err
     })
 
   return {

@@ -3,6 +3,7 @@
 const AWS = require('aws-sdk')
 const { sendMany } = require('../utils/sendMessage')
 const getAllConnections = require('../utils/getAllConnections')
+const getUsername = require('../utils/getUsername')
 
 exports.handler = async (event, _context) => {
   // Check that we have a message to send before doing any work
@@ -45,24 +46,7 @@ exports.handler = async (event, _context) => {
   }
 
   // Retrieve username
-  const queryParams = {
-    ExpressionAttributeValues: {
-      ':connectionId': {
-        S: connectionId
-      }
-    },
-    KeyConditionExpression: 'connectionId = :connectionId',
-    ProjectionExpression: 'username',
-    TableName: CONNECTION_TABLE
-  }
-
-  const username = await db
-    .query(queryParams)
-    .promise()
-    .then(data => {
-      console.log(data)
-      return data.Items[0].username.S
-    })
+  const username = await getUsername(db, CONNECTION_TABLE, connectionId)
     .catch(err => {
       console.error(err)
       throw err

@@ -11,6 +11,9 @@ const getAllConnections = require('../../src/utils/getAllConnections')
 jest.mock('../../src/utils/sendMessage')
 const { sendMany } = require('../../src/utils/sendMessage')
 
+jest.mock('../../src/utils/getUsername')
+const getUsername = require('../../src/utils/getUsername')
+
 describe('message', () => {
   const event = {
     requestContext: {
@@ -82,8 +85,10 @@ describe('message', () => {
       })
     })
 
-    AWSMock.mock('DynamoDB', 'query', (_params, callback) => {
-      callback(error)
+    getUsername.mockImplementationOnce((_d, _t, _u) => {
+      return new Promise((_, reject) => {
+        reject(error)
+      })
     })
 
     await expect(handler(event)).rejects.toEqual(error)
@@ -100,18 +105,10 @@ describe('message', () => {
       })
     })
 
-    AWSMock.mock('DynamoDB', 'query', (_params, callback) => {
-      const data = {
-        Items: [
-          {
-            username: {
-              S: 'test'
-            }
-          }
-        ]
-      }
-
-      callback(null, data)
+    getUsername.mockImplementationOnce((_d, _t, _u) => {
+      return new Promise((resolve, _) => {
+        resolve('test')
+      })
     })
 
     sendMany.mockImplementationOnce((_a, _c, _con, _db, _t) => {
@@ -133,18 +130,10 @@ describe('message', () => {
       })
     })
 
-    AWSMock.mock('DynamoDB', 'query', (_params, callback) => {
-      const data = {
-        Items: [
-          {
-            username: {
-              S: 'test'
-            }
-          }
-        ]
-      }
-
-      callback(null, data)
+    getUsername.mockImplementationOnce((_d, _t, _u) => {
+      return new Promise((resolve, _) => {
+        resolve('test')
+      })
     })
 
     sendMany.mockImplementationOnce((_a, _c, _con, _db, _t) => {
