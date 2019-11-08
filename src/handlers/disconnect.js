@@ -2,7 +2,7 @@
 
 const AWS = require('aws-sdk')
 const getAllConnections = require('../utils/getAllConnections')
-const { sendMany } = require('../utils/sendMessage')
+const sendMessageToList = require('../utils/sendMessageToList')
 
 exports.handler = async (event, _context) => {
   const { connectionId, domainName, stage } = event.requestContext
@@ -58,7 +58,7 @@ exports.handler = async (event, _context) => {
   })
 
   if (connections.length) {
-    await sendMany(apigwManagementApi, postData, connections, db, CONNECTION_TABLE)
+    await sendMessageToList(apigwManagementApi, postData, connections, db, CONNECTION_TABLE)
       .catch(err => console.error(err))
   }
 

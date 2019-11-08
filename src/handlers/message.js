@@ -1,7 +1,7 @@
 'use strict'
 
 const AWS = require('aws-sdk')
-const { sendMany } = require('../utils/sendMessage')
+const sendMessageToList = require('../utils/sendMessageToList')
 const getAllConnections = require('../utils/getAllConnections')
 const getUsername = require('../utils/getUsername')
 
@@ -65,7 +65,7 @@ exports.handler = async (event, _context) => {
     endpoint: `${domainName}/${stage}`
   })
 
-  await sendMany(apigwManagementApi, postData, connections, db, CONNECTION_TABLE)
+  await sendMessageToList(apigwManagementApi, postData, connections, db, CONNECTION_TABLE)
     .catch(err => {
       console.error(err)
       throw err

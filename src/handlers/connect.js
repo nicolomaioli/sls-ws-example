@@ -3,7 +3,7 @@
 const AWS = require('aws-sdk')
 const getRandomUsername = require('../utils/getRandomUsername')
 const getAllConnections = require('../utils/getAllConnections')
-const { sendMany } = require('../utils/sendMessage')
+const sendMessageToList = require('../utils/sendMessageToList')
 
 exports.handler = async (event, _context) => {
   const { CONNECTION_TABLE } = process.env
@@ -63,7 +63,7 @@ exports.handler = async (event, _context) => {
   })
 
   if (connections.length) {
-    await sendMany(apigwManagementApi, connectedPostData, connections, db, CONNECTION_TABLE)
+    await sendMessageToList(apigwManagementApi, connectedPostData, connections, db, CONNECTION_TABLE)
       .catch(err => console.error(err))
   }
 

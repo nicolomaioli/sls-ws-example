@@ -11,8 +11,8 @@ const getRandomUsername = require('../../src/utils/getRandomUsername')
 jest.mock('../../src/utils/getAllConnections')
 const getAllConnections = require('../../src/utils/getAllConnections')
 
-jest.mock('../../src/utils/sendMessage')
-const sendMessage = require('../../src/utils/sendMessage')
+jest.mock('../../src/utils/sendMessageToList')
+const sendMessageToList = require('../../src/utils/sendMessageToList')
 
 describe('$connect', () => {
   const event = {
@@ -38,7 +38,7 @@ describe('$connect', () => {
       })
     })
 
-    sendMessage.sendMany.mockImplementation((_a, _c, _con, _db, _t) => {
+    sendMessageToList.mockImplementation((_a, _c, _con, _db, _t) => {
       return new Promise((resolve, _) => {
         resolve('success')
       })
@@ -115,8 +115,8 @@ describe('$connect', () => {
   })
 
   test('It continues execution if sendMany errors out', async done => {
-    sendMessage.sendMany.mockReset()
-    sendMessage.sendMany.mockImplementationOnce((_a, _c, _con, _db, _t) => {
+    sendMessageToList.mockReset()
+    sendMessageToList.mockImplementationOnce((_a, _c, _con, _db, _t) => {
       return new Promise((_, reject) => {
         const error = new Error('test error')
         reject(error)

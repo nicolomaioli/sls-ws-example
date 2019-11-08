@@ -21,6 +21,10 @@ describe('$default', () => {
     process.env.CONNECTION_TABLE = 'test'
   })
 
+  beforeEach(() => {
+    AWSMock.setSDKInstance(AWS)
+  })
+
   afterEach(() => {
     AWSMock.restore('DynamoDB')
     jest.resetAllMocks()
@@ -29,7 +33,7 @@ describe('$default', () => {
   })
 
   test('It returns 200 when no errors occour', async done => {
-    sendMessage.sendOne.mockImplementation((_a, _p) => {
+    sendMessage.mockImplementation((_a, _p) => {
       return new Promise((resolve, _) => {
         resolve(null)
       })
@@ -41,7 +45,7 @@ describe('$default', () => {
   })
 
   test('It returns 200 and deletes a connection if found stale', async done => {
-    sendMessage.sendOne.mockImplementation((_a, _p) => {
+    sendMessage.mockImplementation((_a, _p) => {
       return new Promise((resolve, _) => {
         resolve('connection')
       })
@@ -56,10 +60,10 @@ describe('$default', () => {
     done()
   })
 
-  test('It throws an error if sendOne is unsuccessful', async done => {
+  test('It throws an error if sendMessage is unsuccessful', async done => {
     const error = new Error('test error')
 
-    sendMessage.sendOne.mockImplementation((_a, _p) => {
+    sendMessage.mockImplementation((_a, _p) => {
       return new Promise((_, reject) => {
         reject(error)
       })
@@ -70,7 +74,7 @@ describe('$default', () => {
   })
 
   test('It continues execution if deleteItem errors out', async done => {
-    sendMessage.sendOne.mockImplementation((_a, _p) => {
+    sendMessage.mockImplementation((_a, _p) => {
       return new Promise((resolve, _) => {
         resolve('connection')
       })

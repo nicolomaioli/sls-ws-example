@@ -1,14 +1,13 @@
 'use strict'
 
 const { handler } = require('../../src/handlers/message')
-const AWS = require('aws-sdk')
 
 // Jest mocks
 jest.mock('../../src/utils/getAllConnections')
 const getAllConnections = require('../../src/utils/getAllConnections')
 
-jest.mock('../../src/utils/sendMessage')
-const { sendMany } = require('../../src/utils/sendMessage')
+jest.mock('../../src/utils/sendMessageToList')
+const sendMessageToList = require('../../src/utils/sendMessageToList')
 
 jest.mock('../../src/utils/getUsername')
 const getUsername = require('../../src/utils/getUsername')
@@ -105,7 +104,7 @@ describe('message', () => {
       })
     })
 
-    sendMany.mockImplementationOnce((_a, _c, _con, _db, _t) => {
+    sendMessageToList.mockImplementationOnce((_a, _c, _con, _db, _t) => {
       return new Promise((_, reject) => {
         reject(error)
       })
@@ -115,7 +114,7 @@ describe('message', () => {
     done()
   })
 
-  test('It throws 200 if sendMany succeeds', async done => {
+  test('It throws 200 if sendMessageToList succeeds', async done => {
     event.body = JSON.stringify({ message: 'test' })
 
     getAllConnections.mockImplementationOnce((_d, _t) => {
@@ -130,7 +129,7 @@ describe('message', () => {
       })
     })
 
-    sendMany.mockImplementationOnce((_a, _c, _con, _db, _t) => {
+    sendMessageToList.mockImplementationOnce((_a, _c, _con, _db, _t) => {
       return new Promise((resolve, _) => {
         resolve({})
       })

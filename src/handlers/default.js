@@ -1,7 +1,7 @@
 'use strict'
 
 const AWS = require('aws-sdk')
-const { sendOne } = require('../utils/sendMessage')
+const sendMessage = require('../utils/sendMessage')
 
 exports.handler = async (event, _context) => {
   const connectionId = event.requestContext.connectionId
@@ -22,7 +22,7 @@ exports.handler = async (event, _context) => {
     Data: postData
   }
 
-  const staleConnection = await sendOne(apigwManagementApi, postToConnectionParams)
+  const staleConnection = await sendMessage(apigwManagementApi, postToConnectionParams)
     .then(connectionId => {
       return connectionId
     })

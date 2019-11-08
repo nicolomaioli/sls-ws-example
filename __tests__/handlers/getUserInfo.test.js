@@ -3,7 +3,7 @@
 const { handler } = require('../../src/handlers/getUserInfo')
 
 jest.mock('../../src/utils/sendMessage')
-const { sendOne } = require('../../src/utils/sendMessage')
+const sendMessage = require('../../src/utils/sendMessage')
 
 jest.mock('../../src/utils/getUsername')
 const getUsername = require('../../src/utils/getUsername')
@@ -50,7 +50,7 @@ describe('message', () => {
       })
     })
 
-    sendOne.mockImplementationOnce((_a, _p) => {
+    sendMessage.mockImplementationOnce((_a, _p) => {
       return new Promise((_, reject) => {
         reject(error)
       })
@@ -60,14 +60,14 @@ describe('message', () => {
     done()
   })
 
-  test('It returns 200 if sendOne succeeds', async done => {
+  test('It returns 200 if sendMessage succeeds', async done => {
     getUsername.mockImplementationOnce((_d, _t, _c) => {
       return new Promise((resolve, _) => {
         resolve('test')
       })
     })
 
-    sendOne.mockImplementationOnce((_a, _p) => {
+    sendMessage.mockImplementationOnce((_a, _p) => {
       return new Promise((resolve, _) => {
         resolve('test')
       })

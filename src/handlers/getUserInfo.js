@@ -1,7 +1,7 @@
 'use strict'
 
 const AWS = require('aws-sdk')
-const { sendOne } = require('../utils/sendMessage')
+const sendMessage = require('../utils/sendMessage')
 const getUsername = require('../utils/getUsername')
 
 exports.handler = async event => {
@@ -33,7 +33,7 @@ exports.handler = async event => {
     Data: successPostData
   }
 
-  await sendOne(apigwManagementApi, postToConnectionParams)
+  await sendMessage(apigwManagementApi, postToConnectionParams)
     .catch(err => {
       console.error(err)
       throw err
