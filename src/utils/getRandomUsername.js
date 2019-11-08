@@ -31,7 +31,7 @@ module.exports = () => {
 
   const randomRace = races[Math.floor(Math.random() * (races.length))]
   const randomClass = classes[Math.floor(Math.random() * (classes.length))]
-  const randomNumber = 60 + Math.floor(Math.random() * (40))
+  const randomNumber = 60 + Math.floor(Math.random() * 40)
 
   return `${randomRace}${randomClass}${randomNumber}`
 }
