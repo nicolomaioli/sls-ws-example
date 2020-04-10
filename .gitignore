@@ -10,3 +10,6 @@ coverage
 # Vim
 tags
 tags.*
+
+# macOs
+.DS_Store
